@@ -12,29 +12,16 @@ const {Users} = require('./utils/users');
 const fs = require('fs');
 const readingFile = fs.readFileSync("rooms.json");
 const data = JSON.parse(readingFile);
-let users = new Users();
+
+
+const users = {}
 
 app.use(cors())
 app.use(express.static(publicPath));
 
 io.on('connection', (socket) => {
+console.log('connected')
 
-socket.on('join', (params, callback) => {
-  if(!realString(params.name) || !realString(params.room)){
-    return callback('name is req')
-  }
-  socket.join(params.room);
-      users.removeUser(socket.id);
-        users.addUser(socket.id, params.name, params.room);
-          io.to(params.room).emit('updateUsersList', users.getUserList(params.room))
-            let user = users.getUser(socket.id);
-
-              socket.emit('newMessage', generateMessage('Admin', `Welcome to Room ${params.room}`));
-                io.to(users.room).emit('newMessage', generateMessage('Admin', `${users.name}`));
-
-
-            callback();
-})
 
 
     console.log('There is connection')
@@ -65,6 +52,70 @@ app.get('/chatroom/:id', (req, res) => {
     const singleRoom = data.Chatrooms.find(room => room.id === id)
     return res.json(singleRoom)
 })
+
+
+
+app.delete('/api/rooms/:id', (req, res) => {
+    // Look up the room if no exist, return 404
+    const room = rooms.find(e => e.id === parseInt(req.params.id));
+    if (!room)
+        return res.status(404).send('The room with specific id is not found');
+    // Delete
+    const index = rooms.indexOf(room);
+    rooms.splice(index, 1);
+    // Return the deleted room
+    res.send(room);
+
+    // Fs module
+    let data = JSON.stringify(rooms);
+    fs.writeFile('rooms.json', data, done);
+
+
+
+
+    function done(err) {
+        console.log('working')
+    }
+
+});
+
+
+
+app.post('/api/rooms', (req, res) => {
+    //Validation for unique room
+    for (let room of rooms) {
+        if (room.name === req.body.name) {
+          res.status(409).send("other room");
+          return;
+        }
+    }
+    // Validate, if invalid return 400 - Bad request
+    if (!req.body.name)
+        return res.status(400).send('Name is required')
+    // room to be added
+    const room = {
+        id: rooms.length + 1,
+        name: req.body.name
+    };
+    // Add the room with push
+    console.log('hej',room);
+    rooms.push(room);
+    // Return the added room
+    res.send(room)
+
+    // Fs module
+    let data = JSON.stringify(rooms);
+    fs.writeFile('rooms.json', data, done);
+    function done(err) {
+
+
+
+      console.log('working');
+    }
+
+});
+
+
 
 
 const port = 3015;

@@ -1,23 +1,15 @@
 import express from 'express';
-const path = require('path');
 const app = express();
 import http from 'http';
 const server = http.createServer(app);
 import socketIO from 'socket.io';
 const io = socketIO(server);
-const publicPath = path.join(__dirname, "/../public");
 import cors from 'cors';
-const {realString} = require('./utils/realString');
-const {Users} = require('./utils/users');
 const fs = require('fs');
 const readingFile = fs.readFileSync("rooms.json");
-const data = JSON.parse(readingFile);
-
-
-const users = {}
+const data = JSON.parse(readingFile)
 
 app.use(cors())
-app.use(express.static(publicPath));
 
 io.on('connection', (socket) => {
 console.log('connected')
@@ -41,6 +33,7 @@ app.get('/getallrooms', (req, res) => {
             id: room.id,
             roomName: room.roomName
         }
+        console.log('hello room id',room.id);
         allRooms.push(roomInfo)
     })
     return res.json(allRooms)
@@ -48,75 +41,44 @@ app.get('/getallrooms', (req, res) => {
 
 app.get('/chatroom/:id', (req, res) => {
     const id = req.params.id;
-    console.log(data.Chatrooms)
+    console.log('id',id)
     const singleRoom = data.Chatrooms.find(room => room.id === id)
     return res.json(singleRoom)
 })
 
 
 
-app.delete('/api/rooms/:id', (req, res) => {
-    // Look up the room if no exist, return 404
-    const room = rooms.find(e => e.id === parseInt(req.params.id));
-    if (!room)
-        return res.status(404).send('The room with specific id is not found');
-    // Delete
-    const index = rooms.indexOf(room);
-    rooms.splice(index, 1);
-    // Return the deleted room
-    res.send(room);
+app.delete("/chatroom/:id", (req, res) => {
+    const id = req.params.id;
 
-    // Fs module
-    let data = JSON.stringify(rooms);
-    fs.writeFile('rooms.json', data, done);
-
-
-
-
-    function done(err) {
-        console.log('working')
+    if (!id) {
+        res.status(400).end();
+        return;
     }
-
-});
-
-
-
-app.post('/api/rooms', (req, res) => {
-    //Validation for unique room
-    for (let room of rooms) {
-        if (room.name === req.body.name) {
-          res.status(409).send("other room");
-          return;
+    const singleRoom = data.Chatrooms.find(room => room.id === id)
+    console.log("delete index:" + roomIdx);
+    if (singleRoom !== -1) {
+        rooms.chatrooms.splice(singleRoom, 1);
+    }
+    let data = JSON.stringify(singleRoom);
+    fs.writeFile('rooms.json', data, (err) => {
+        if (err) {
+            res.status(500).end();
+            return;
         }
-    }
-    // Validate, if invalid return 400 - Bad request
-    if (!req.body.name)
-        return res.status(400).send('Name is required')
-    // room to be added
-    const room = {
-        id: rooms.length + 1,
-        name: req.body.name
-    };
-    // Add the room with push
-    console.log('hej',room);
-    rooms.push(room);
-    // Return the added room
-    res.send(room)
 
-    // Fs module
-    let data = JSON.stringify(rooms);
-    fs.writeFile('rooms.json', data, done);
-    function done(err) {
-
-
-
-      console.log('working');
-    }
-
+    });
+    res.status(204).end()
 });
 
 
 
 
-const port = 3015;
+
+
+
+
+
+
+const port = 3030;
 server.listen(port, () => console.log(`Server is running on port ${port}`));

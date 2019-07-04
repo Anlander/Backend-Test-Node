@@ -4,11 +4,23 @@ import socketIO from 'socket.io-client';
 import { NavLink } from 'react-router-dom';
 import axios from 'axios';
 
+
 // const io = require('socket.io-client');
 // const socket = io()
 // const username = prompt('enter name')
 // socket.emit('add user', username);
 
+
+
+function removeClassRom(e) {
+
+      axios.delete(`/chatroom/${this.state.id}`)
+            .then((response) => {
+                console.log(response);
+            }).catch((error) => {
+                console.log(error);
+            })
+    }
 
 class ChatRoom extends Component {
     state = {
@@ -19,7 +31,7 @@ class ChatRoom extends Component {
         message: ''
     }
     componentDidMount() {
-        axios.get(`http://localhost:3015/chatroom/${this.props.match.params.id}`)
+        axios.get(`http://localhost:3030/chatroom/${this.props.match.params.id}`)
             .then(response => {
                 this.setState({
                     roomId: response.data.id,
@@ -27,11 +39,13 @@ class ChatRoom extends Component {
                     messages: response.data.messages
                 })
             })
-        this.listen = socketIO.connect('http://localhost:3015');
+        this.listen = socketIO.connect('http://localhost:3030');
     }
     componentWillUnmount() {
-        this.listen.disconnect('http://localhost:3015')
+        this.listen.disconnect('http://localhost:3030')
     }
+
+
 
 
     onChange = e => {
@@ -54,6 +68,8 @@ class ChatRoom extends Component {
             })
         })
     }
+
+
     render() {
         if(this.state.messages.length === 0) {
             return null
@@ -68,19 +84,20 @@ class ChatRoom extends Component {
         })
         return(
         <div>
-          <div class="chat__main">
+          <div className="chat__main">
 
-            <div class="chat__sidebar">
+            <div className="chat__sidebar">
+            <button onClick={(e) => removeClassRom(e)}>Delete</button>
             <h1 className="headline"> Välkommen till {this.state.roomName} </h1>
             <NavLink className="back" to="/">Go To Rooms</NavLink>
                 </div>
-              <ol id="messages" class="chat__messages">{messages}</ol>
-            <div class="chat__footer">
+              <ol id="messages" className="chat__messages">{messages}</ol>
+            <div className="chat__footer">
         <div className="form-field">
           <div id="message-form">
-            Användarnamn:<input type="text" name="username" onChange={(e) => this.onChange(e)} />
-            Meddelande:  <input name="message" onChange={(e) => this.onChange(e)}></input>
-            <button onClick={() => this.send()}>Skicka</button>
+            <input placeholder="Username "type="text" name="username" onChange={(e) => this.onChange(e)} />
+            <input placeholder="Message" name="message" onChange={(e) => this.onChange(e)}></input>
+            <button key= {this.state.roomId} onClick={() => this.send()}>Skicka</button>
             </div>
          </div>
        </div>

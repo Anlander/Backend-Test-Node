@@ -47,38 +47,51 @@ app.get('/chatroom/:id', (req, res) => {
 })
 
 
+app.post('/getallrooms', (req, res ) => {
+  const rooms = {
+    id:rooms.length + 1,
+    name: request.body.roomName,
+  }
+  rooms.push(rooms);
+  response.json(rooms);
 
-app.delete("/chatroom/:id", (req, res) => {
-    const id = req.params.id;
-
-    if (!id) {
-        res.status(400).end();
-        return;
-    }
-    const singleRoom = data.Chatrooms.find(room => room.id === id)
-    console.log("delete index:" + roomIdx);
-    if (singleRoom !== -1) {
-        rooms.chatrooms.splice(singleRoom, 1);
-    }
-    let data = JSON.stringify(singleRoom);
-    fs.writeFile('rooms.json', data, (err) => {
-        if (err) {
-            res.status(500).end();
-            return;
-        }
-
-    });
-    res.status(204).end()
 });
 
 
 
 
 
+// app.delete("/chatroom/:id", (req, res) => {
+//     const id = req.params.id;
+//
+//     if (!id) {
+//         res.status(400).end();
+//         return;
+//     }
+//     const singleRoom = data.Chatrooms.find(room => room.id === id)
+//     console.log("delete index:" + roomIdx);
+//     if (singleRoom !== -1) {
+//         rooms.chatrooms.splice(singleRoom, 1);
+//     }
+//     let data = JSON.stringify(singleRoom);
+//     fs.writeFile('rooms.json', data, (err) => {
+//         if (err) {
+//             res.status(500).end();
+//             return;
+//         }
+//
+//     });
+//     res.status(204).end()
+// });
 
 
 
 
 
-const port = 3030;
+
+
+
+
+
+const port = 8000;
 server.listen(port, () => console.log(`Server is running on port ${port}`));

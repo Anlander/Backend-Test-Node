@@ -12,15 +12,7 @@ import axios from 'axios';
 
 
 
-function removeClassRom(e) {
 
-      axios.delete(`/chatroom/${this.state.id}`)
-            .then((response) => {
-                console.log(response);
-            }).catch((error) => {
-                console.log(error);
-            })
-    }
 
 class ChatRoom extends Component {
     state = {
@@ -31,18 +23,19 @@ class ChatRoom extends Component {
         message: ''
     }
     componentDidMount() {
-        axios.get(`http://localhost:3030/chatroom/${this.props.match.params.id}`)
+        axios.get(`http://localhost:3020/chatroom/${this.props.match.params.id}`)
             .then(response => {
                 this.setState({
                     roomId: response.data.id,
                     roomName: response.data.roomName,
-                    messages: response.data.messages
+                    messages: response.data.messages,
+
                 })
             })
-        this.listen = socketIO.connect('http://localhost:3030');
+        this.listen = socketIO.connect('http://localhost:3020');
     }
     componentWillUnmount() {
-        this.listen.disconnect('http://localhost:3030')
+        this.listen.disconnect('http://localhost:3020')
     }
 
 
@@ -87,7 +80,7 @@ class ChatRoom extends Component {
           <div className="chat__main">
 
             <div className="chat__sidebar">
-            <button onClick={(e) => removeClassRom(e)}>Delete</button>
+
             <h1 className="headline"> Välkommen till {this.state.roomName} </h1>
             <NavLink className="back" to="/">Go To Rooms</NavLink>
                 </div>

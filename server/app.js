@@ -1,6 +1,6 @@
 import express from 'express';
 const app = express();
-import http from 'http';
+const http = require('http');
 const server = http.createServer(app);
 import socketIO from 'socket.io';
 const io = socketIO(server);
@@ -9,6 +9,7 @@ const fs = require('fs');
 const readingFile = fs.readFileSync("rooms.json");
 const data = JSON.parse(readingFile)
 const bodyParser = require('body-parser');
+const port = process.env.PORT || 8000
 app.use(express.static("public-client"));
 
 app.use(bodyParser());
@@ -20,7 +21,7 @@ app.use(bodyParser());
 app.use(cors())
 
 io.on('connection', (socket) => {
-console.log('connected')
+
 
 
 
@@ -30,9 +31,16 @@ console.log('connected')
         let messageArray = insertArray[0].messages;
         messageArray.push(message)
         fs.writeFileSync('rooms.json', JSON.stringify(data))
-        socket.emit('newMessage', message)
+
+        io.emit('newMessage', message)
         console.log(message);
     })
+
+    socket.on ('disconnect', () => {
+      console.log('User Was Disconnected');
+
+    })
+
 })
 
 app.get('/getallrooms', (req, res) => {
@@ -44,7 +52,7 @@ app.get('/getallrooms', (req, res) => {
 
 
         }
-        console.log('hello room id',room.id);
+        // console.log('hello room id',room.id);
         allRooms.push(roomInfo)
     })
     return res.json(allRooms)
@@ -93,9 +101,11 @@ app.delete("/chatroom/:id", (req, res) => {
             return;
         }
         console.log('Data written efter delete:');
+
     });
-    res.status(204);
-    res.end()
+
+  res.send(204)
+  res.end()
 });
 
 
@@ -103,5 +113,5 @@ app.delete("/chatroom/:id", (req, res) => {
 
 
 
-const port = 3020;
+
 server.listen(port, () => console.log(`Server is running on port ${port}`));

@@ -207,9 +207,31 @@ button {
   }
 
   .btn-home {
-    width: 120px;
+    width: 110px;
     text-align: center;
-
+    background-color: white;
+    color:black;
+    position: relative;
+    left: 1px;
 
 
   }
+
+  .menu {
+    font-size: 30px;
+
+  }
+
+  .center {
+    background-color:black;
+  }
+
+  .input-menu {
+    height: 35px;
+  }
+
+
+.btn-menu {
+  margin-left: 4px;
+  margin-top: 1px;
+}

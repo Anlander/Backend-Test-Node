@@ -32,7 +32,7 @@ io.on('connection', (socket) => {
         messageArray.push(message)
         fs.writeFileSync('rooms.json', JSON.stringify(data))
 
-        io.emit('newMessage', message)
+        socket.emit('newMessage', message)
         console.log(message);
     })
 

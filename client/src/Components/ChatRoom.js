@@ -23,7 +23,7 @@ class ChatRoom extends Component {
         message: ''
     }
     componentDidMount() {
-        axios.get(`http://localhost:3020/chatroom/${this.props.match.params.id}`)
+        axios.get(`http://localhost:8000/chatroom/${this.props.match.params.id}`)
             .then(response => {
                 this.setState({
                     roomId: response.data.id,
@@ -32,10 +32,11 @@ class ChatRoom extends Component {
 
                 })
             })
-        this.listen = socketIO.connect('http://localhost:3020');
+        this.listen = socketIO.connect('http://localhost:8000');
+        console.log("helladawdadawdo" + socketIO);
     }
     componentWillUnmount() {
-        this.listen.disconnect('http://localhost:3020')
+        this.listen.disconnect('http://localhost:8000')
     }
 
 
@@ -60,6 +61,7 @@ class ChatRoom extends Component {
                 messages: [...this.state.messages, message]
             })
         })
+        console.log(message);
     }
 
 

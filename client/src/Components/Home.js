@@ -7,14 +7,13 @@ import axios from 'axios';
 
 
 
-
-
 function Home() {
     const [rooms, setRooms] = useState('');
-    const [newRoom, updateNewRoom] = useState([]);
-    const [updateRooms] = useState([]);
+    const [newRoom, refreshNewRoom] = useState([]);
+
+
     useEffect(() => {
-        axios.get('http://localhost:3020/getallrooms')
+        axios.get('http://localhost:8000/getallrooms')
             .then(response => setRooms(response.data))
     }, [])
 
@@ -22,17 +21,27 @@ function Home() {
         return null;
     }
 
+    function refreshRooms() {
+        axios
+          .get("http://localhost:8000/getallrooms")
+          .then(response => {
+          setRooms(response.data)
+          })
+          .catch(error => console.log(error));
+      }
+
+
+
     function onChangeRoom (e){
-      updateNewRoom(e.target.value);
-      Home()
+      refreshNewRoom(e.target.value);
 
     }
 
     function onDelete(id) {
 
-       axios.delete(`http://localhost:3020/chatroom/${id}`)
+       axios.delete(`http://localhost:8000/chatroom/${id}`)
            .then((response) => {
-               updateRooms(response.data.chatroom)
+              refreshRooms()
                console.log(response);
            })
            .catch(error => {
@@ -42,9 +51,9 @@ function Home() {
 
    function createRoom() {
 
-      axios.post("http://localhost:3020/getallrooms", { roomName: newRoom })
+      axios.post("http://localhost:8000/getallrooms", { roomName: newRoom })
           .then((response) => {
-              Home()
+              refreshRooms()
               console.log("hello" + response);
               console.log(newRoom);
           })
@@ -60,8 +69,8 @@ function Home() {
         return (
           <tbody key={index.toString()}>
             <tr>
-              <td><NavLink to={`/chatroom/${room.id}`}>{room.roomName}</NavLink></td>
-              <button onClick={() => onDelete()}>X</button>
+              <td><NavLink to={`/chatroom/${room.id}`} className="menu">{room.roomName}</NavLink></td>
+              <button className="btn-menu" onClick={(id) => onDelete(room.id)}>X</button>
 
             </tr>
           </tbody>
@@ -69,8 +78,8 @@ function Home() {
     })
 
     return(
-      <div>
-      <input type="text" value={newRoom} placeholder='write room name' onChange={e => updateNewRoom(e.target.value)}></input>
+      <div className="center">
+      <input className="input-menu" type="text" value={newRoom} placeholder='Write room name' onChange={e => refreshNewRoom(e.target.value)}></input>
       <button className="btn-home" onClick={() => createRoom()}>CreateRoom</button>
             <div>
                 <ul>
